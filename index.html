@@ -1,0 +1,497 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>Taipei Unfolded | 5D Backpacker's Masterplan</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    :root {
+      --bg-deep: #0a0f1c;
+      --glass-bg: rgba(18, 25, 45, 0.75);
+      --glass-border: rgba(255, 255, 255, 0.08);
+      --text-light: #f0f3fc;
+      --text-muted: #b9c3db;
+      --text-dim: #7c88a8;
+      --accent-blue: #6b9eff;
+      --accent-teal: #3bc9c2;
+      --accent-gold: #f9b43a;
+      --success: #2ba14b;
+      --warning: #e67e22;
+      --info: #4b7bec;
+      --radius-md: 14px;
+      --radius-lg: 24px;
+    }
+
+    body {
+      background: radial-gradient(circle at 15% 30%, rgba(107, 158, 255, 0.12), transparent 55%),
+                  radial-gradient(circle at 85% 70%, rgba(59, 201, 194, 0.12), transparent 60%),
+                  var(--bg-deep);
+      font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', sans-serif;
+      color: var(--text-light);
+      padding: 20px;
+      line-height: 1.5;
+    }
+
+    .app-container {
+      max-width: 1320px;
+      margin: 0 auto;
+    }
+
+    .glass-core {
+      background: var(--glass-bg);
+      backdrop-filter: blur(20px);
+      border: 1px solid var(--glass-border);
+      border-radius: var(--radius-lg);
+      padding: 1.75rem;
+      box-shadow: 0 24px 48px rgba(0, 0, 0, 0.4);
+    }
+
+    .nav-pills {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 28px;
+      background: rgba(10, 15, 28, 0.6);
+      backdrop-filter: blur(16px);
+      border-radius: 60px;
+      padding: 6px;
+      border: 0.5px solid var(--glass-border);
+    }
+
+    .nav-pill {
+      background: transparent;
+      border: none;
+      padding: 9px 24px;
+      font-weight: 500;
+      font-size: 0.9rem;
+      color: var(--text-muted);
+      border-radius: 40px;
+      cursor: pointer;
+      transition: all 0.2s;
+      font-family: inherit;
+    }
+
+    .nav-pill:hover {
+      background: rgba(255, 255, 255, 0.07);
+      color: white;
+    }
+
+    .nav-pill.active {
+      background: var(--accent-blue);
+      color: #0a0f1c;
+      box-shadow: 0 5px 12px rgba(107, 158, 255, 0.35);
+    }
+
+    .view-section {
+      display: none;
+      animation: fadeSlide 0.3s ease;
+    }
+
+    .view-section.active-view {
+      display: block;
+    }
+
+    @keyframes fadeSlide {
+      from { opacity: 0; transform: translateY(6px);}
+      to { opacity: 1; transform: translateY(0);}
+    }
+
+    .day-buttons-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-bottom: 28px;
+      padding-bottom: 12px;
+      border-bottom: 1px solid var(--glass-border);
+    }
+
+    .day-btn {
+      background: rgba(255, 255, 255, 0.04);
+      border: 0.5px solid var(--glass-border);
+      border-radius: 40px;
+      padding: 8px 20px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .day-btn:hover {
+      background: rgba(107, 158, 255, 0.2);
+      border-color: var(--accent-blue);
+      color: white;
+      transform: translateY(-1px);
+    }
+
+    .day-btn.active-day-btn {
+      background: var(--accent-blue);
+      color: #0a0f1c;
+      border-color: var(--accent-blue);
+      box-shadow: 0 4px 12px rgba(107, 158, 255, 0.3);
+    }
+
+    .progress-timeline {
+      position: relative;
+      padding-left: 32px;
+      margin-top: 8px;
+    }
+
+    .progress-timeline::before {
+      content: '';
+      position: absolute;
+      left: 15px;
+      top: 18px;
+      bottom: 20px;
+      width: 2px;
+      background: linear-gradient(to bottom, var(--accent-blue), var(--accent-teal), rgba(59, 201, 194, 0.2));
+      border-radius: 2px;
+      transform: translateX(-50%);
+    }
+
+    .timeline-item {
+      position: relative;
+      margin-bottom: 2rem;
+    }
+
+    .timeline-dot {
+      position: absolute;
+      left: -22px;
+      top: 4px;
+      width: 14px;
+      height: 14px;
+      border-radius: 50%;
+      background: var(--accent-teal);
+      border: 2px solid rgba(59, 201, 194, 0.7);
+      box-shadow: 0 0 0 3px rgba(10, 15, 28, 0.9);
+      z-index: 2;
+    }
+
+    .timeline-dot.free { background: var(--success); border-color: #6fdc8c; }
+    .timeline-dot.food { background: var(--accent-gold); border-color: #ffdc97; }
+    .timeline-dot.transport { background: var(--info); border-color: #8bb2ff; }
+    .timeline-dot.sunrise { background: var(--accent-gold); border-color: #ffcd7e; }
+    .timeline-dot.sunset { background: #c77dff; border-color: #e2b6ff; }
+
+    .timeline-time {
+      font-size: 0.7rem;
+      font-weight: 600;
+      color: var(--accent-teal);
+      letter-spacing: 0.3px;
+      margin-bottom: 5px;
+    }
+
+    .timeline-title {
+      font-weight: 700;
+      font-size: 1rem;
+      color: white;
+      margin-bottom: 6px;
+    }
+
+    .timeline-desc {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      line-height: 1.45;
+      max-width: 90%;
+    }
+
+    .badge-stack {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 9px;
+    }
+
+    .mini-tag {
+      font-size: 0.7rem;
+      background: rgba(255, 255, 255, 0.07);
+      padding: 3px 11px;
+      border-radius: 30px;
+      color: var(--text-muted);
+      border: 0.3px solid rgba(255,255,255,0.1);
+    }
+
+    .alert-card {
+      border-radius: 18px;
+      padding: 12px 18px;
+      margin-bottom: 24px;
+      font-size: 0.85rem;
+      backdrop-filter: blur(4px);
+    }
+    .alert-info-card { background: rgba(75, 123, 236, 0.15); border-left: 3px solid var(--info); }
+    .alert-success-card { background: rgba(43, 161, 75, 0.12); border-left: 3px solid var(--success); }
+    .alert-warning-card { background: rgba(230, 126, 34, 0.12); border-left: 3px solid var(--warning); }
+    .alert-gold-card { background: rgba(249, 180, 58, 0.12); border-left: 3px solid var(--accent-gold); }
+
+    .grid-two {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 18px;
+      margin-bottom: 26px;
+    }
+
+    .info-metric {
+      background: rgba(255, 255, 255, 0.04);
+      border-radius: 20px;
+      padding: 1rem 1.2rem;
+      border: 0.5px solid var(--glass-border);
+    }
+
+    .food-grid-layout {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
+      gap: 12px;
+    }
+
+    .section-header {
+      font-size: 1.4rem;
+      font-weight: 700;
+      margin: 1.2rem 0 0.8rem;
+      letter-spacing: -0.3px;
+    }
+
+    @media (max-width: 680px) {
+      .glass-core { padding: 1.2rem; }
+      .timeline-desc { max-width: 100%; }
+      .progress-timeline { padding-left: 28px; }
+      .timeline-dot { left: -20px; width: 12px; height: 12px; }
+      .progress-timeline::before { left: 13px; }
+    }
+
+    hr { border-color: var(--glass-border); margin: 16px 0; }
+    .inline-highlight { color: var(--accent-teal); font-weight: 500; }
+  </style>
+</head>
+<body>
+<div class="app-container">
+  <div class="glass-core">
+    <!-- main navigation -->
+    <div class="nav-pills" id="mainNav">
+      <button class="nav-pill active" data-view="overview">📌 Trip Overview</button>
+      <button class="nav-pill" data-view="dailyflow">🗓️ Daily Flow</button>
+      <button class="nav-pill" data-view="foodie">🍜 Food Guide</button>
+      <button class="nav-pill" data-view="gems">✨ Hidden Gems</button>
+      <button class="nav-pill" data-view="budget">💰 Budget</button>
+      <button class="nav-pill" data-view="contingency">🔄 Contingency Plan</button>
+    </div>
+
+    <!-- ========== 1. OVERVIEW: full trip portrait, budget, places ========= -->
+    <div id="overviewView" class="view-section active-view">
+      <div class="alert-card alert-info-card">
+        🧭 <strong>5 days · Taipei & Northeast Coast · Smart Routing · Sunrise to Night Market</strong><br>
+        This itinerary blends free cultural landmarks, volcanic landscapes, coastal day trips, and legendary night markets — all optimized for June weather and minimal backtracking.
+      </div>
+
+      <div class="grid-two">
+        <div class="info-metric"><div style="font-size:0.7rem;color:var(--text-dim)">Trip length</div><div style="font-size:1.8rem;font-weight:700;">5 days / 4 nights</div><div class="sub">18–22 June</div></div>
+        <div class="info-metric"><div style="font-size:0.7rem;color:var(--text-dim)">Total budget (all-in)</div><div style="font-size:1.8rem;font-weight:700;">~$92 USD</div><div class="sub">excl. flights/accommodation</div></div>
+        <div class="info-metric"><div style="font-size:0.7rem;color:var(--text-dim)">Free vs paid</div><div style="font-size:1.8rem;font-weight:700;">98% free</div><div class="sub">only Yehliu entry + lantern</div></div>
+      </div>
+
+      <div class="section-header">🏞️ Must-visit highlights (included)</div>
+      <div class="grid-two">
+        <div class="info-metric">🌄 <strong>Elephant Mountain Sunrise</strong> — Taipei 101 framed by dawn colors, free & iconic</div>
+        <div class="info-metric">🏛️ <strong>CKS Memorial Hall</strong> — grand liberty square & guard ceremony</div>
+        <div class="info-metric">🏮 <strong>Jiufen Old Street</strong> — Spirited Away mountain village, sea views</div>
+        <div class="info-metric">💦 <strong>Shifen Waterfall + Sky Lantern</strong> — Taiwan's little Niagara & wish tradition</div>
+        <div class="info-metric">🗿 <strong>Yehliu Geopark</strong> — queen's head & alien rock formations</div>
+        <div class="info-metric">🌋 <strong>Yangmingshan Volcano</strong> — sulfur fumaroles & rolling grasslands</div>
+        <div class="info-metric">🌅 <strong>Tamsui Fisherman's Wharf</strong> — legendary sunset over estuary</div>
+        <div class="info-metric">🍜 <strong>3 night markets</strong> — Lehua, Shilin, Ningxia (local street food heaven)</div>
+      </div>
+
+      <div class="alert-card alert-success-card" style="margin-top: 8px;">
+        ✅ <strong>Smart routing</strong> — Each day clusters around 1-2 MRT lines, avoiding cross-city chaos. Includes backup options & flexible pacing.
+      </div>
+    </div>
+
+    <!-- ========== DAILY FLOW (fully functional day buttons) ========= -->
+    <div id="dailyflowView" class="view-section">
+      <div class="day-buttons-row" id="dayButtonsContainer">
+        <button class="day-btn active-day-btn" data-day="1">🌙 Day 1 · 18 Jun</button>
+        <button class="day-btn" data-day="2">☀️ Day 2 · 19 Jun</button>
+        <button class="day-btn" data-day="3">⛰️ Day 3 · 20 Jun</button>
+        <button class="day-btn" data-day="4">🌋 Day 4 · 21 Jun</button>
+        <button class="day-btn" data-day="5">✈️ Day 5 · 22 Jun</button>
+      </div>
+      <div id="dailyTimelineContainer"></div>
+    </div>
+
+    <!-- FOOD GUIDE -->
+    <div id="foodieView" class="view-section">
+      <div class="section-header">🍢 Budget eats under $5</div>
+      <div class="food-grid-layout">
+        <div class="info-metric">🥩 Lu rou fan – $1.8</div><div class="info-metric">🥟 Guotie (10pcs) – $3</div>
+        <div class="info-metric">🦪 Oyster omelet – $2.5</div><div class="info-metric">🍜 Beef noodle soup – $5</div>
+        <div class="info-metric">🧋 Bubble tea – $1.8</div><div class="info-metric">🌯 Scallion pancake – $1.2</div>
+        <div class="info-metric">🍍 Pineapple cake – $1</div><div class="info-metric">🍗 Fried chicken cutlet – $2.5</div>
+        <div class="info-metric">🥚 7-Eleven tea egg – $0.4</div><div class="info-metric">🍠 Taro ball dessert – $3</div>
+      </div>
+      <div class="alert-card alert-info-card" style="margin-top:1rem;">💡 Night market hack: arrive 17:30–18:30 for fresh batches & zero queues.</div>
+    </div>
+
+    <!-- HIDDEN GEMS -->
+    <div id="gemsView" class="view-section">
+      <div class="section-header">💎 Underrated Taipei experiences</div>
+      <div class="grid-two">
+        <div class="info-metric">🏔️ Maokong Gondola ($2) – tea plantations & skyline night view</div>
+        <div class="info-metric">🛤️ Pingxi Branch Railway – $5 day pass, Shifen waterfall & mining villages</div>
+        <div class="info-metric">♨️ Beitou hot spring footbath – free thermal experience & library</div>
+        <div class="info-metric">🏛️ Tainan old capital (2-day HSR) – street food mecca, temples</div>
+        <div class="info-metric">🌊 Yehliu at golden hour – less crowded, photogenic rock shadows</div>
+      </div>
+    </div>
+
+    <!-- BUDGET BREAKDOWN -->
+    <div id="budgetView" class="view-section">
+      <div class="section-header">💰 realistic spending</div>
+      <div class="grid-two">
+        <div class="info-metric"><strong>Daily avg (food + transport)</strong><br/>Food $9-11 · Transit $3-4 → <strong>~$15/day</strong></div>
+        <div class="info-metric"><strong>Day trip extra (Day3)</strong><br/>Jiufen+Shifen+Yehliu ~$15 (train+lantern+geopark)</div>
+        <div class="info-metric"><strong>5-day total (excluding gifts)</strong><br/>$89 – $105 flexible</div>
+        <div class="info-metric"><strong>Money saving gold</strong><br/>Refill water at MRT, skip Taipei 101 observatory, use YouBike first 30min $0.5</div>
+      </div>
+      <div class="alert-card alert-success-card">🎯 Budget tip: EasyCard gives NT$20 discount on Maokong Gondola & bus transfers are cheap. Street breakfast = $1.5 full meal.</div>
+    </div>
+
+    <!-- ========== 3. CONTINGENCY PLAN (instead of skip list) ========= -->
+    <div id="contingencyView" class="view-section">
+      <div class="alert-card alert-gold-card">
+        🔄 <strong>Flexible Taipei — Plan B / extra time options</strong><br>
+        If you finish early, change your mind, or want spontaneous detours, here's a curated list of nearby alternatives (all reachable via MRT or short bus).
+      </div>
+
+      <div class="section-header">📍 Within 30 min from city center (easy to add)</div>
+      <div class="grid-two">
+        <div class="info-metric"><strong>🎨 Treasure Hill Artist Village</strong> — riverside squat turned creative commune, galleries & quirky stairs (free, MRT Gongguan + 10min walk). Perfect if you finish Huashan early.</div>
+        <div class="info-metric"><strong>🌳 Daan Forest Park</strong> — Taipei's Central Park, tranquil ponds & jogging trails. Great for afternoon break after Yongkang Street.</div>
+        <div class="info-metric"><strong>📖 National Taiwan University campus</strong> — sprawling green space, colonial architecture, cheap student cafes. Combine with Gongguan night market.</div>
+        <div class="info-metric"><strong>🛍️ Wufenpu Fashion District</strong> — wholesale clothes alleys near Raohe Night Market. If Raohe feels too short, spend an extra hour bargain hunting.</div>
+      </div>
+
+      <div class="section-header">🌿 Northern coast & mountain alternates</div>
+      <div class="grid-two">
+        <div class="info-metric"><strong>🚠 Maokong Gondola & tea houses</strong> — instead of Yangmingshan on a hazy day, take MRT to Taipei Zoo and ride gondola ($2) for stunning city panoramas & free hiking trails.</div>
+        <div class="info-metric"><strong>🏞️ Wulai Atayal village</strong> — hot springs, waterfall, indigenous culture. 1h bus from Xindian MRT. Perfect if Jiufen feels too crowded (weekend alternative).</div>
+        <div class="info-metric"><strong>🏖️ Fulong Beach & Caoling Tunnel</strong> — golden sand beach + old railway tunnel bike ride. Train from Taipei to Fulong (~$5). Great for sunny afternoon instead of Yehliu.</div>
+        <div class="info-metric"><strong>🚲 Keelung Night Market & Harbor</strong> — after Jiufen/Shifen, extend to Keelung's Miaokou Night Market (seafood-focused, different vibe). Bus from Ruifang.</div>
+      </div>
+
+      <div class="section-header">🌆 Last-minute / evening wildcards</div>
+      <div class="grid-two">
+        <div class="info-metric"><strong>🎑 Ximending pedestrian zone</strong> — only if you crave youth energy & street performances. Best for late snacks after 9PM.</div>
+        <div class="info-metric"><strong>🌉 Rainbow Bridge & Raohe night market extended</strong> — riverside walk after Raohe, beautifully lit.</div>
+        <div class="info-metric"><strong>🪕 Dalongdong Baoan Temple</strong> — UNESCO candidate temple with stunning night lighting (close to Yuanshan MRT).</div>
+      </div>
+
+      <div class="alert-card alert-info-card" style="margin-top: 12px;">
+        💡 <strong>Pro tip:</strong> If you finish Day 2 early, go straight to Dadaocheng for sunset + Ningxia Night Market combo. For Day 4, if Yangmingshan seems foggy, pivot to Maokong + Zhinan Temple hike — equally stunning.
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  // ---------- DAY DATA (timeline exact match for the itinerary) ----------
+  const dayData = {
+    1: {
+      alert: "📍 Area focus: Zhongzheng + Da'an (Blue/Green lines) — CKS Memorial Hall, then Taipei Main underground street, finally Yongkang Street evening vibes.",
+      items: [
+        { time: "15:00", title: "Arrival + EasyCard pickup", desc: "Airport MRT → Taipei Main. Grab EasyCard at 7-Eleven, top up $20.", tags: ["🚇 MRT ~$6"], type: "transport" },
+        { time: "16:00", title: "Chiang Kai-shek Memorial Hall (Liberty Square)", desc: "Golden hour glow on marble arches; changing of the guard every hour.", tags: ["🎟️ Free", "📸 Iconic"], type: "free" },
+        { time: "17:30", title: "Taipei Main Underground Street (Zhongshan Metro Mall)", desc: "1km+ air-conditioned shopping street with indie designers, bookstores, cheap eats.", tags: ["🛍️ Budget shopping", "❄️ AC relief"], type: "free" },
+        { time: "19:00", title: "Yongkang Street Evening Walk & Dinner", desc: "Mango shaved ice, legendary dumpling shops, Japanese-era alleys.", tags: ["🍚 Dinner ~$6", "🌃 Evening vibe"], type: "food" }
+      ]
+    },
+    2: {
+      alert: "🌅 Golden day: sunrise hike, creative park, local neighborhoods, Dadaocheng sunset. Minimal MRT transfers.",
+      items: [
+        { time: "05:20", title: "Elephant Mountain Sunrise (Xiangshan)", desc: "20-min stair climb, iconic Taipei 101 skyline at golden hour. Best free view.", tags: ["🌄 Sunrise 05:11", "🥾 Free hike"], type: "sunrise" },
+        { time: "07:30", title: "Yonghe Riverside Park", desc: "Morning tai chi, river breeze, local life near hostel area.", tags: ["🌿 Local escape"], type: "free" },
+        { time: "09:30", title: "Huashan 1914 Creative Park", desc: "Former winery turned art hub: indie galleries, open courtyards.", tags: ["🎨 Free entry", "📷 Instagram heaven"], type: "free" },
+        { time: "12:00", title: "Zhongshan Area + Lin Sen Park", desc: "Japanese-era architecture, Xingtian Temple, old barbershops, peaceful park.", tags: ["🏯 Hidden gems"], type: "free" },
+        { time: "14:00", title: "Lunch: Dumplings or Beef Noodle Soup", desc: "Zhongshan's local spots: guotie + hot&sour soup ~$4.", tags: [], type: "food" },
+        { time: "16:30", title: "Dadaocheng Wharf + Dihua Street (Sunset)", desc: "Historic merchant street + riverfront sunset (18:50). Top Taipei sunset spot.", tags: ["🌅 Best sunset", "🏺 Souvenirs"], type: "sunset" },
+        { time: "19:30", title: "Optional: Ningxia Night Market", desc: "Compact local night market: taro balls, coffin bread.", tags: [], type: "food" }
+      ]
+    },
+    3: {
+      alert: "🚌 Ultimate NE coast day trip: Jiufen misty village, Shifen waterfall & sky lanterns, Yehliu's surreal rock formations. Start early 7AM.",
+      items: [
+        { time: "07:00", title: "Depart for Ruifang (Train from Taipei Main)", desc: "Train ~$3 (45min), then bus to Jiufen.", tags: ["🚆 Regional train"], type: "transport" },
+        { time: "08:30", title: "Jiufen Old Street — Spirited Away vibes", desc: "Misty mountain village, red lantern alleys, tea houses overlooking Pacific.", tags: ["🏮 Free entry", "🍡 Taro balls"], type: "free" },
+        { time: "11:30", title: "Shifen Waterfall + Sky Lanterns", desc: "Little Niagara of Taiwan, then release a lantern on railway tracks (~$5).", tags: ["🏞️ Free waterfall", "🏮 Lantern ~$5"], type: "free" },
+        { time: "14:30", title: "Yehliu Geopark (Queen's Head)", desc: "Honeycomb rocks & mushroom stones; entry $3.5. Dramatic coastal landscapes.", tags: ["🌍 Geopark $3.5", "📸 Surreal"], type: "free" },
+        { time: "17:30", title: "Return to Taipei", desc: "Bus to Keelung then train back (~$4).", tags: [], type: "transport" }
+      ]
+    },
+    4: {
+      alert: "🌋 Volcanic morning: sulfur fumaroles & rolling grasslands, then legendary Tamsui sunset, closing with Ningxia night market.",
+      items: [
+        { time: "08:30", title: "Yangmingshan National Park (Xiaoyoukeng & Qingtiangang)", desc: "Sulfur fumaroles, wild grasslands, ocean views. Free entry, bus from Jiantan.", tags: ["🌿 Volcanic", "🚌 Bus ~$1.5"], type: "free" },
+        { time: "12:30", title: "Lunch at Yangmingshan / Zhuzihu", desc: "Wild veggie stir-fry or bento ~$5.", tags: [], type: "food" },
+        { time: "14:30", title: "Head to Tamsui (Red Line, end station)", desc: "35 min MRT ride, scenic towards coast.", tags: [], type: "transport" },
+        { time: "16:00", title: "Tamsui Fisherman's Wharf & Fort San Domingo", desc: "Colonial fort, riverside boardwalk, sunset at 18:40 — pastel skies over estuary.", tags: ["🌅 Best coastal sunset", "🏰 Fort free"], type: "sunset" },
+        { time: "19:30", title: "Ningxia Night Market (back to city)", desc: "Oyster omelet, peanut ice-cream rolls, stinky tofu final feast.", tags: [], type: "food" }
+      ]
+    },
+    5: {
+      alert: "✈️ Morning departure: check out early, Airport MRT before 6AM to catch flight comfortably.",
+      items: [
+        { time: "05:30", title: "Check out & MRT to Taipei Main", desc: "EasyCard tap out, take Airport MRT Commuter Express (first train ~05:30). 50 min to T2.", tags: ["🚆 Airport MRT $5"], type: "transport" },
+        { time: "06:40", title: "Arrive Taoyuan Airport (Terminal 2)", desc: "Check-in safe window, grab last tea egg or pineapple cake.", tags: [], type: "transport" }
+      ]
+    }
+  };
+
+  function renderTimeline(dayNum) {
+    const data = dayData[dayNum];
+    if (!data) return '<div class="alert-card alert-warning-card">No data</div>';
+    let html = `<div class="alert-card alert-info-card" style="margin-bottom: 20px;">${data.alert}</div><div class="progress-timeline">`;
+    data.items.forEach(item => {
+      let dotClass = "timeline-dot";
+      if (item.type === "free") dotClass += " free";
+      else if (item.type === "food") dotClass += " food";
+      else if (item.type === "transport") dotClass += " transport";
+      else if (item.type === "sunrise") dotClass += " sunrise";
+      else if (item.type === "sunset") dotClass += " sunset";
+      else dotClass += " free";
+      let tagsHtml = item.tags?.length ? `<div class="badge-stack">${item.tags.map(t => `<span class="mini-tag">${t}</span>`).join('')}</div>` : "";
+      html += `<div class="timeline-item"><div class="${dotClass}"></div><div class="timeline-time">${item.time}</div><div class="timeline-title">${item.title}</div><div class="timeline-desc">${item.desc}</div>${tagsHtml}</div>`;
+    });
+    html += `</div>`;
+    return html;
+  }
+
+  const timelineContainer = document.getElementById('dailyTimelineContainer');
+  let currentDay = 1;
+  function loadDay(day) { if(timelineContainer) { timelineContainer.innerHTML = renderTimeline(day); currentDay = day; } }
+  function initDayButtons() {
+    document.querySelectorAll('.day-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const dayVal = parseInt(btn.dataset.day, 10);
+        document.querySelectorAll('.day-btn').forEach(b => b.classList.remove('active-day-btn'));
+        btn.classList.add('active-day-btn');
+        loadDay(dayVal);
+      });
+    });
+  }
+  function switchMainView(viewId) {
+    document.querySelectorAll('.view-section').forEach(s => s.classList.remove('active-view'));
+    document.getElementById(`${viewId}View`).classList.add('active-view');
+    document.querySelectorAll('.nav-pill').forEach(p => p.classList.remove('active'));
+    document.querySelector(`.nav-pill[data-view="${viewId}"]`).classList.add('active');
+    if (viewId === 'dailyflow' && timelineContainer && !timelineContainer.innerHTML) loadDay(currentDay);
+  }
+  document.querySelectorAll('.nav-pill').forEach(p => p.addEventListener('click', () => switchMainView(p.dataset.view)));
+  document.addEventListener('DOMContentLoaded', () => { initDayButtons(); loadDay(1); });
+  window.switchMainView = switchMainView;
+</script>
+</body>
+</html>
